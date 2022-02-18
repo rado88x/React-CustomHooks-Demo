@@ -5,26 +5,25 @@ import Tasks from "./components/Tasks/Tasks";
 import NewTask from "./components/NewTask/NewTask";
 
 function App() {
-  const transformTask = useCallback( (taskObj) => {
-    const loadedTasks = [];
-    for (const taskKey in taskObj) {
-      loadedTasks.push({ id: taskKey, text: taskObj[taskKey].text });
-    }
-    setTasks(loadedTasks);
-  }, [] );
-
-  const httpData = useHttp(
-    { url: "https://moviedb-3b2a4-default-rtdb.firebaseio.com/tasks.json" },
-    transformTask
-  );
-
-  const { isLoading, error, sendRequest: fetchTasks } = httpData;
-
   const [tasks, setTasks] = useState([]);
 
- 
+  const { isLoading, error, sendRequest: fetchTasks } = useHttp();
+
   useEffect(() => {
-    fetchTasks();
+    const transformTasks = (tasksObj) => {
+      const loadedTasks = [];
+
+      for (const taskKey in tasksObj) {
+        loadedTasks.push({ id: taskKey, text: tasksObj[taskKey].text });
+      }
+
+      setTasks(loadedTasks);
+    };
+
+    fetchTasks(
+      { url: 'https://moviedb-3b2a4-default-rtdb.firebaseio.com/tasks.json' },
+      transformTasks
+    );
   }, [fetchTasks]);
 
   const taskAddHandler = (task) => {
@@ -45,3 +44,6 @@ function App() {
 }
 
 export default App;
+
+
+//"https://moviedb-3b2a4-default-rtdb.firebaseio.com/tasks.json" 
